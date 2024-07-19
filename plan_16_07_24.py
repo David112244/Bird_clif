@@ -210,12 +210,13 @@ def relearn_model():
         return False
 
     break_ = False
-    print(break_)
     true_features, true_targets = preparation_data(3)
     model = load_model(f'{main_path}/models/model_6_2.keras')
     paths = sf.get_bird_paths(0, 'train')
     np.random.shuffle(paths)
     for path in paths:
+        if len(target_paths) > 0:
+            path = target_paths.pop()
         audio, sr = lb.load(path)
         length = len(audio) / sr
         count_slices = int(length * Settings.count_slices_in_sec)
@@ -253,8 +254,7 @@ def relearn_model():
         model.save(f'{main_path}/models/model_6_2_retrain.keras')
 
 
-learn_model_2()
+relearn_model()
 # научиться пользоваться генераторами
 # реализовать все намеченные алгоритмы
 input('><')
-

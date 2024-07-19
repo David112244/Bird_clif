@@ -7,7 +7,7 @@ class Settings:
     count_slices_in_sec = 128
     count_slices_in_step = 256
     full = False
-    on_pycharm = False
+    on_pycharm = True
 
     if on_pycharm:
         main_path = 'E:/datas/birdclif'
