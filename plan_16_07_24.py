@@ -13,6 +13,7 @@ from keras.utils import to_categorical
 from keras.models import load_model
 from keras.callbacks import EarlyStopping
 
+import main
 import models
 import small_functions as sf
 import medium_functions as mf
@@ -21,7 +22,7 @@ from settings import Settings
 from joblib import dump, load
 
 output = 182
-bird_species = mf.bird_species[:output]
+bird_species = main.get_bird_species()
 main_path = Settings.main_path
 
 target_paths = ['train_audio/asbfly/XC856776.ogg']
