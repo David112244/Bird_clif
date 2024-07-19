@@ -260,6 +260,6 @@ def relearn_model():
         model.save(f'{main_path}/models/model_6_2_retrain.keras')
 
 
-relearn_model()
+
 # научиться пользоваться генераторами
 

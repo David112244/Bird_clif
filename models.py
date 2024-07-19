@@ -280,7 +280,7 @@ def model_6(out, batch_size):  # рекурентная, способная об
     model = Sequential()
 
     # Блок свёрточных слоёв 1
-    model.add(Conv3D(32, (1, 3, 3), activation='relu', padding='same', input_shape=(batch_size, 256, 256, 1)))
+    model.add(Conv3D(32, (1, 3, 3), activation='relu', padding='same', input_shape=(batch_size, 256, 256)))
     model.add(Conv3D(32, (1, 3, 3), activation='relu', padding='same'))
     model.add(MaxPooling3D((1,2, 2)))
     model.add(Dropout(0.2))
