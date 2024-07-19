@@ -10,10 +10,9 @@ from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split
 
 from settings import Settings
+import main
 
-main_path = Settings.main_path
-get_species = lambda x: x.split('\\')[-1]
-bird_species = [get_species(i) for i in glob(f'{main_path}/train_audio/*')]
+bird_species = main.get_bird_species()
 
 
 def spec_from_audio(audio, hop=128, mel=128):
@@ -493,8 +492,9 @@ def return_segments_for_plots(segs):
         stop += 16
     return np.array(result)
 
+
 # принимает данные возврщает подвыборки размером batch_size сохраняя последовательность
-def get_batch_data(features,targets, batch_size):
+def get_batch_data(features, targets, batch_size):
     r_features = []
     r_targets = []
     start = 0
@@ -508,4 +508,4 @@ def get_batch_data(features,targets, batch_size):
         end += 1
     r_features = np.array(r_features)
     r_targets = np.array(r_targets)
-    return [r_features,r_targets]
+    return [r_features, r_targets]
