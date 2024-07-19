@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 import sys
 from glob import glob
+from time import sleep
 from collections import Counter
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -40,6 +41,7 @@ def marking(bird_id):
 
         lb.display.specshow(main_spec)
         plt.show()
+        sleep(1)
         go = input('Marking? >>>')
         if go != 'g':
             print('No')
