@@ -3,6 +3,8 @@ import numpy as np
 from settings import Settings
 from glob import glob
 
+import plan_16_07_24
+
 
 def get_bird_species():
     main_path = Settings.main_path
@@ -19,3 +21,4 @@ def get_bird_species():
 if len(get_bird_species()) == 0:
     print('Не тот компьютер')
     input('>>><<<')
+# plan_16_07_24.learn_model_2()
