@@ -138,7 +138,8 @@ def preparation_data(batch_size):
     paths = glob(f'{main_path}/marking_spectrogram/*')
     features = []
     targets = []
-    for path in paths:
+    for i,path in enumerate(paths):
+        print(i)
         frame = pd.read_csv(path)
         features.append(np.array(frame.drop('label', axis=1)))
         targets.append(np.array(frame['label']))
@@ -217,7 +218,7 @@ def relearn_model():
     np.random.shuffle(paths)
     for path in paths:
         if len(target_paths) > 0:
-            path = f'{main_path}/train_audio/asbfly/{target_paths.pop()}'
+            path = f'{main_path}/{target_paths.pop()}'
         audio, sr = lb.load(path)
         length = len(audio) / sr
         count_slices = int(length * Settings.count_slices_in_sec)
