@@ -10,7 +10,7 @@ def get_bird_species():
     if Settings.on_pycharm:
         get_species = lambda x: x.split('\\')[-1]
     else:
-        get_species = lambda x: x.split('/')[0]
+        get_species = lambda x: x.split('/')[-1]
 
     bird_species = [get_species(i) for i in glob(f'{main_path}/train_audio/*')]
     return bird_species
