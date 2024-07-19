@@ -26,7 +26,8 @@ output = 182
 bird_species = main.get_bird_species()
 main_path = Settings.main_path
 
-target_paths = ['train_audio/asbfly/XC856776.ogg']
+target_paths = ['train_audio/asbfly/XC856776.ogg',
+                'train_audio/asbfly/XC600171.ogg']
 
 
 # проверить как лучше сохранять спектрограммы в картинки или в .csv
@@ -56,7 +57,6 @@ def marking(bird_id):
             p = p.reshape(16, -1)
             df = pd.DataFrame(p)
             df['label'] = answers
-            print(df)
             count = len(glob(f'{main_path}/marking_spectrogram/*'))
             df.to_csv(f'{main_path}/marking_spectrogram/batch_{count}.csv', index=False)
 
@@ -218,7 +218,7 @@ def relearn_model():
     np.random.shuffle(paths)
     for path in paths:
         if len(target_paths) > 0:
-            path = target_paths.pop()
+            path = f'{main_path}/train_audio/asbfly/{target_paths.pop()}'
         audio, sr = lb.load(path)
         length = len(audio) / sr
         count_slices = int(length * Settings.count_slices_in_sec)
