@@ -138,7 +138,7 @@ def preparation_data(batch_size):
     paths = glob(f'{main_path}/marking_spectrogram/*')
     features = []
     targets = []
-    for i,path in enumerate(paths):
+    for i,path in enumerate(paths[:2]):
         print(i)
         frame = pd.read_csv(path)
         features.append(np.array(frame.drop('label', axis=1)))
@@ -188,6 +188,7 @@ def learn_model_2():
 
 
 def relearn_model():
+    print('relearn_model')
     # - если прогнозы всех записей схожи между собой, то выбирается другая запись
     # - сохожесть вычисляется среднее по всем записям +-3 и все записи должны соответствовать
     # этому правилу
@@ -236,8 +237,8 @@ def relearn_model():
             if similarity or round_similarity:
                 break_ = True
                 break
-
-            sf.create_plots(main_spec, path, s[2:], round_prediction)
+            prediction_str = [f'{rp[0]}_{rp[1]}' for rp in round_prediction]
+            sf.create_plots(main_spec, path, s[2:], prediction_str)
             if input('True? >>>') != 't':
                 continue
 
@@ -256,6 +257,6 @@ def relearn_model():
         model.save(f'{main_path}/models/model_6_2_retrain.keras')
 
 
-
+relearn_model()
 # научиться пользоваться генераторами
 
