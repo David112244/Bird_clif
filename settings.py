@@ -12,7 +12,7 @@ class Settings:
     if on_pycharm:
         main_path = 'E:/datas/birdclif'
     else:
-        main_path = 'content/drive/MyDrive/bird_clif'
+        main_path = '/content/drive/MyDrive/bird_clif'
 
 
 print(Settings.main_path)
