@@ -239,18 +239,19 @@ def relearn_model():
                 break
             prediction_str = [f'{rp[0]}_{rp[1]}' for rp in round_prediction]
             sf.create_plots(main_spec, path, s[2:], prediction_str)
+            sleep(1)
             if input('True? >>>') != 't':
                 continue
 
-            features = np.append(true_features, f).reshape(-1, 3, 256, 256)
-            targets = np.append(true_targets, round_prediction).reshape(-1, 2)
+            # features = np.append(true_features, f).reshape(-1, 3, 256, 256)
+            # targets = np.append(true_targets, round_prediction).reshape(-1, 2)
 
-            model.fit(
-                features, targets,
-                batch_size=16,
-                steps_per_epoch=f.shape[0] // 16,
-                epochs=1
-            )
+            # model.fit(
+            #     features, targets,
+            #     batch_size=16,
+            #     steps_per_epoch=f.shape[0] // 16,
+            #     epochs=1
+            # )
         if break_:
             break_ = False
             continue
