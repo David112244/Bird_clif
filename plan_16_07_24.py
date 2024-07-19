@@ -24,8 +24,7 @@ output = 182
 bird_species = mf.bird_species[:output]
 main_path = Settings.main_path
 
-target_paths = ['E:/datas/birdclif/train_audio/asbfly\XC596043.ogg',
-                'E:/datas/birdclif/train_audio/asbfly\XC207738.ogg']
+target_paths = ['train_audio/asbfly/XC856776.ogg']
 
 
 # проверить как лучше сохранять спектрограммы в картинки или в .csv
