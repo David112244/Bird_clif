@@ -246,6 +246,8 @@ def relearn_model():
             features = np.append(true_features, f).reshape(-1, 3, 256, 256,1)
             targets = np.append(true_targets, round_prediction).reshape(-1, 2)
 
+            print(features.shape,targets.shape)
+
             model.fit(
                 features, targets,
                 batch_size=16,
