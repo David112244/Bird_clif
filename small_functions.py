@@ -13,7 +13,7 @@ from sklearn.model_selection import train_test_split
 from settings import Settings
 import main
 
-bird_species = main.get_bird_species()
+bird_species = settings.get_bird_species()
 main_path = Settings.main_path
 
 def spec_from_audio(audio, hop=128, mel=128):
