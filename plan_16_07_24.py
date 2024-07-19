@@ -253,7 +253,7 @@ def relearn_model():
         model.save(f'{main_path}/models/model_6_2_retrain.keras')
 
 
-marking(0)
+learn_model_2()
 # научиться пользоваться генераторами
 # реализовать все намеченные алгоритмы
 input('><')
