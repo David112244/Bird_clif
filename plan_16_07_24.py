@@ -14,17 +14,17 @@ from keras.utils import to_categorical
 from keras.models import load_model
 from keras.callbacks import EarlyStopping
 
-import main
+
 import models
 import small_functions as sf
 import medium_functions as mf
-from settings import Settings
+import settings
 
 from joblib import dump, load
 
 output = 182
-bird_species = main.get_bird_species()
-main_path = Settings.main_path
+bird_species = settings.get_bird_species()
+main_path = settings.Settings.main_path
 
 target_paths = ['train_audio/asbfly/XC856776.ogg',
                 'train_audio/asbfly/XC600171.ogg']
@@ -37,7 +37,7 @@ def marking(bird_id):
         path = paths[np.random.randint(0, len(paths))]
         audio, sr = lb.load(path)
         length = len(audio) / sr
-        count_slices = int(length * Settings.count_slices_in_sec)
+        count_slices = int(length * settings.Settings.count_slices_in_sec)
         main_spec = sf.spec_from_audio(audio, count_slices, 256)
 
         lb.display.specshow(main_spec)
@@ -49,7 +49,7 @@ def marking(bird_id):
             continue
         print(path)
 
-        segments = sf.split_spectrogram(Settings.count_slices_in_step, main_spec)
+        segments = sf.split_spectrogram(settings.Settings.count_slices_in_step, main_spec)
         portions = sf.return_segments_for_plots(segments)
         for p in portions:
             sf.create_plots(main_spec, path, p, [i for i in range(16)])
@@ -120,7 +120,7 @@ def check_model():
     for path in paths:
         audio, sr = lb.load(path)
         length = len(audio) / sr
-        count_slices = int(length * Settings.count_slices_in_sec)
+        count_slices = int(length * settings.Settings.count_slices_in_sec)
         main_spec = sf.spec_from_audio(audio, count_slices, 256)
 
         segments = sf.split_spectrogram(256, main_spec)
@@ -222,7 +222,7 @@ def relearn_model():
             path = f'{main_path}/{target_paths.pop()}'
         audio, sr = lb.load(path)
         length = len(audio) / sr
-        count_slices = int(length * Settings.count_slices_in_sec)
+        count_slices = int(length * settings.Settings.count_slices_in_sec)
         main_spec = sf.spec_from_audio(audio, count_slices, 256)
 
         segments = sf.split_spectrogram(256, main_spec)

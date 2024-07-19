@@ -11,11 +11,11 @@ from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split
 
 import settings
-from settings import Settings
-import main
+
+
 
 bird_species = settings.get_bird_species()
-main_path = Settings.main_path
+main_path = settings.Settings.main_path
 
 def spec_from_audio(audio, hop=128, mel=128):
     sr = 22050

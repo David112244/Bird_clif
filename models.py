@@ -321,4 +321,6 @@ def model_6(out, depth, height=256, width=256, channels=1):  # рекуррен�
     model.summary()
 
     return model
-print('asfds')
+
+
+print('import models')
