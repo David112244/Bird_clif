@@ -22,7 +22,7 @@ from joblib import dump, load
 
 output = 182
 bird_species = mf.bird_species[:output]
-main_path = mf.main_path
+main_path = Settings.main_path
 
 target_paths = ['E:/datas/birdclif/train_audio/asbfly\XC596043.ogg',
                 'E:/datas/birdclif/train_audio/asbfly\XC207738.ogg']
@@ -253,9 +253,8 @@ def relearn_model():
         model.save(f'{main_path}/models/model_6_2_retrain.keras')
 
 
-relearn_model()
+marking(0)
 # научиться пользоваться генераторами
 # реализовать все намеченные алгоритмы
 input('><')
-input('><')
-input('><')
+

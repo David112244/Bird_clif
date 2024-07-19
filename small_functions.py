@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 
 from settings import Settings
 
-main_path = 'E:/datas/birdclif'
+main_path = Settings.main_path
 get_species = lambda x: x.split('\\')[-1]
 bird_species = [get_species(i) for i in glob(f'{main_path}/train_audio/*')]
 

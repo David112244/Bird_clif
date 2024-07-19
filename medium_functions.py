@@ -21,7 +21,7 @@ from settings import Settings
 
 # import models
 
-main_path = 'E:/datas/birdclif'
+main_path = Settings.main_path
 get_species = lambda x: x.split('\\')[-1]
 bird_species = np.array([get_species(i) for i in glob(f'{main_path}/train_audio/*')])
 
