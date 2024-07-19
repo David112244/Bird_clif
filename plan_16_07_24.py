@@ -167,7 +167,6 @@ def learn_model_2():
     model = models.model_6(2, batch_size)
 
     early_stopping = EarlyStopping(
-        monitor='accuracy',
         min_delta=0.01,
         verbose=1,
         patience=10,
@@ -256,7 +255,6 @@ def relearn_model():
         model.save(f'{main_path}/models/model_6_2_retrain.keras')
 
 
-relearn_model()
+
 # научиться пользоваться генераторами
-# реализовать все намеченные алгоритмы
-input('><')
+
