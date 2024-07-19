@@ -138,13 +138,13 @@ def preparation_data(batch_size):
     paths = glob(f'{main_path}/marking_spectrogram/*')
     features = []
     targets = []
-    for i,path in enumerate(paths[:2]):
+    for i,path in enumerate(paths[:]):
         print(i)
         frame = pd.read_csv(path)
         features.append(np.array(frame.drop('label', axis=1)))
         targets.append(np.array(frame['label']))
     features = np.array(features)
-    features = features.reshape(features.shape[0] * features.shape[1], 256, 256)
+    features = features.reshape(features.shape[0] * features.shape[1], 256, 256,1)
     targets = np.array(targets).reshape(-1)
     targets = to_categorical(targets)
 
@@ -232,26 +232,26 @@ def relearn_model():
 
             prediction = model.predict(f)
             round_prediction = np.array([th(pre[0], pre[1]) for pre in prediction])
+            print(round_prediction)
             similarity = similarity_check(prediction)
             round_similarity = similarity_check(round_prediction)
             if similarity or round_similarity:
                 break_ = True
                 break
-            prediction_str = [f'{rp[0]}_{rp[1]}' for rp in round_prediction]
-            sf.create_plots(main_spec, path, s[2:], prediction_str)
-            sleep(1)
-            if input('True? >>>') != 't':
-                continue
+            # prediction_str = [f'{rp[0]}_{rp[1]}' for rp in round_prediction]
+            # sf.create_plots(main_spec, path, s[2:], prediction_str)
+            # if input('True? >>>') != 't':
+            #     continue
 
-            # features = np.append(true_features, f).reshape(-1, 3, 256, 256)
-            # targets = np.append(true_targets, round_prediction).reshape(-1, 2)
+            features = np.append(true_features, f).reshape(-1, 3, 256, 256,1)
+            targets = np.append(true_targets, round_prediction).reshape(-1, 2)
 
-            # model.fit(
-            #     features, targets,
-            #     batch_size=16,
-            #     steps_per_epoch=f.shape[0] // 16,
-            #     epochs=1
-            # )
+            model.fit(
+                features, targets,
+                batch_size=16,
+                steps_per_epoch=f.shape[0] // 16,
+                epochs=1
+            )
         if break_:
             break_ = False
             continue

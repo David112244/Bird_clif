@@ -1,1 +1,2 @@
-plan_16_07_24
+import keras
+print(keras.__version__)
