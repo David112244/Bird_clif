@@ -240,13 +240,15 @@ def relearn_model(true_features, true_targets):
                 similarity = similarity_check(prediction)
                 round_similarity = similarity_check(round_prediction)
                 if similarity or round_similarity:
-                    break_ = True
-                    break
+
                 prediction_str = [f'{rp[0]}_{rp[1]}' for rp in round_prediction]
                 sf.create_plots(main_spec, path, s[2:], prediction_str)
                 input_ = input('True? >>>')
                 sleep(3)
                 if input_ == '':
+                    break
+                elif input_=='qq':
+                    break_ = True
                     break
                 else:
                     threshold -= 0.1
