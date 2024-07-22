@@ -266,6 +266,6 @@ def relearn_model(true_features, true_targets):
             continue
         model.save(f'{main_path}/models/model_6_2_retrain.keras')
 
-relearn_model()
+
 
 # научиться пользоваться генераторами
