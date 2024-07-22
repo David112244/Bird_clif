@@ -14,7 +14,6 @@ from keras.utils import to_categorical
 from keras.models import load_model
 from keras.callbacks import EarlyStopping
 
-
 import models
 import small_functions as sf
 import medium_functions as mf
@@ -138,13 +137,13 @@ def preparation_data(batch_size):
     paths = glob(f'{main_path}/marking_spectrogram/*')
     features = []
     targets = []
-    for i,path in enumerate(paths[:]):
+    for i, path in enumerate(paths[:]):
         print(i)
         frame = pd.read_csv(path)
         features.append(np.array(frame.drop('label', axis=1)))
         targets.append(np.array(frame['label']))
     features = np.array(features)
-    features = features.reshape(features.shape[0] * features.shape[1], 256, 256,1)
+    features = features.reshape(features.shape[0] * features.shape[1], 256, 256, 1)
     targets = np.array(targets).reshape(-1)
     targets = to_categorical(targets)
 
@@ -187,8 +186,9 @@ def learn_model_2():
     model.save(f'{main_path}/models/model_6_2.keras')
 
 
-def relearn_model():
+def relearn_model(true_features, true_targets):
     print('relearn_model')
+
     # - если прогнозы всех записей схожи между собой, то выбирается другая запись
     # - сохожесть вычисляется среднее по всем записям +-3 и все записи должны соответствовать
     # этому правилу
@@ -213,7 +213,7 @@ def relearn_model():
         return False
 
     break_ = False
-    true_features, true_targets = preparation_data(3)
+    # true_features, true_targets = preparation_data(3)
     model = load_model(f'{main_path}/models/model_6_2.keras')
     paths = sf.get_bird_paths(0, 'train')
     np.random.shuffle(paths)
@@ -232,21 +232,21 @@ def relearn_model():
 
             prediction = model.predict(f)
             round_prediction = np.array([th(pre[0], pre[1]) for pre in prediction])
-            print(round_prediction)
+            # print(round_prediction)
             similarity = similarity_check(prediction)
             round_similarity = similarity_check(round_prediction)
             if similarity or round_similarity:
                 break_ = True
                 break
-            # prediction_str = [f'{rp[0]}_{rp[1]}' for rp in round_prediction]
-            # sf.create_plots(main_spec, path, s[2:], prediction_str)
+            prediction_str = [f'{rp[0]}_{rp[1]}' for rp in round_prediction]
+            sf.create_plots(main_spec, path, s[2:], prediction_str)
             # if input('True? >>>') != 't':
             #     continue
 
-            features = np.append(true_features, f).reshape(-1, 3, 256, 256,1)
+            features = np.append(true_features, f).reshape(-1, 3, 256, 256, 1)
             targets = np.append(true_targets, round_prediction).reshape(-1, 2)
 
-            print(features.shape,targets.shape)
+            # print(features.shape, targets.shape)
 
             model.fit(
                 features, targets,
@@ -260,6 +260,6 @@ def relearn_model():
         model.save(f'{main_path}/models/model_6_2_retrain.keras')
 
 
+# learn_model_2()
 
 # научиться пользоваться генераторами
-
