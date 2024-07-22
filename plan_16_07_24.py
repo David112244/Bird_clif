@@ -286,24 +286,28 @@ def remarking(path, true_features=0, true_targets=0):
     print(new_features.shape, new_targets.shape)
     features = np.append(true_features, new_features).reshape(-1, 3, 256, 256, 1)
     targets = np.append(true_targets, new_targets).reshape(-1, 2)
-
     model = load_model(f'{main_path}/models/model_6_2_retrain.keras')
-    model.fit(
-        features, targets,
-        batch_size=16,
-        steps_per_epoch=features.shape[0] // 16,
-        epochs=2
-    )
 
-    for _ in range(2):
-        portion = portions[np.random.randint(0, len(portions))]
-        check_batch, _ = sf.get_batch_data(portion, [1 for _ in range(len(portion))], 3)
-        print(check_batch.shape)
-        prediction = model.predict(check_batch)
-        prediction = np.round(prediction, 2)
+    while True:
+        model.fit(
+            features, targets,
+            batch_size=16,
+            steps_per_epoch=features.shape[0] // 16,
+            epochs=2
+        )
 
-        sf.create_plots(main_spec, path, check_batch[:, -1], prediction)
+        for _ in range(2):
+            portion = portions[np.random.randint(0, len(portions))]
+            check_batch, _ = sf.get_batch_data(portion, [1 for _ in range(len(portion))], 3)
+            print(check_batch.shape)
+            prediction = model.predict(check_batch)
+            prediction = np.round(prediction, 2)
+            prediction_str = [f'{rp[0]}_{rp[1]}' for rp in prediction]
 
+            sf.create_plots(main_spec, path, check_batch[:, -1], prediction_str)
+        if input('Goog? >>')=='y':
+            model.save(f'{main_path}/models/model_6_2_retrain.keras')
+            return
 
 
 # научиться пользоваться генераторами

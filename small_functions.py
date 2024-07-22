@@ -340,7 +340,7 @@ def generate_random_numbers(how_much, count):
 
 
 def input_marking_answers(count):
-    if Settings.debug:
+    if settings.Settings.debug:
         return np.array([1 for _ in range(count)])
     else:
         inp = input(f'{count} ответов>>>')

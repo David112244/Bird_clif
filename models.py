@@ -370,5 +370,5 @@ def model_7(out, depth, height=256, width=256, channels=1):
 
     return model
 
-model_7(2,5)
+# model_7(2,5)
 print('import models')
