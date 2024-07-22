@@ -6,7 +6,7 @@ from keras import backend as K, Input, Model
 from keras.layers import TimeDistributed, Concatenate, LSTM, GRU, Conv2D, Conv3D, Dense, Dropout, MaxPooling2D, \
     MaxPooling3D, Flatten, Add, \
     Concatenate, \
-    GlobalMaxPooling2D
+    GlobalMaxPooling2D, Bidirectional
 from keras.optimizers import Adam
 from tensorflow.keras.metrics import Accuracy, Precision, Recall
 from keras.losses import CategoricalCrossentropy, BinaryCrossentropy
@@ -298,8 +298,8 @@ def model_6(out, depth, height=256, width=256, channels=1):  # рекуррен�
     model.add(Dropout(0.2))
 
     # Блок свёрточных слоёв 4
-    model.add(Conv3D(64, (1, 3, 3), activation='relu', padding='same'))
-    model.add(Conv3D(64, (1, 3, 3), activation='relu', padding='same'))
+    model.add(Conv3D(128, (1, 3, 3), activation='relu', padding='same'))
+    model.add(Conv3D(128, (1, 3, 3), activation='relu', padding='same'))
     model.add(MaxPooling3D((1, 2, 2)))
     model.add(Dropout(0.2))
 
@@ -323,4 +323,52 @@ def model_6(out, depth, height=256, width=256, channels=1):  # рекуррен�
     return model
 
 
+# рекурентная двухнаправленная
+def model_7(out, depth, height=256, width=256, channels=1):
+    model = Sequential()
+
+    # Блок свёрточных слоёв 1
+    model.add(Conv3D(32, (1, 3, 3), activation='relu', padding='same', input_shape=(depth, height, width, channels)))
+    model.add(Conv3D(32, (1, 3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling3D((1, 2, 2)))
+    model.add(Dropout(0.2))
+
+    # Блок свёрточных слоёв 2
+    model.add(Conv3D(64, (1, 3, 3), activation='relu', padding='same'))
+    model.add(Conv3D(64, (1, 3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling3D((1, 2, 2)))
+    model.add(Dropout(0.2))
+
+    # Блок свёрточных слоёв 3
+    model.add(Conv3D(128, (2, 3, 3), activation='relu', padding='same'))
+    model.add(Conv3D(128, (2, 3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling3D((1, 2, 2)))
+    model.add(Dropout(0.2))
+
+    # Блок свёрточных слоёв 4
+    model.add(Conv3D(128, (1, 3, 3), activation='relu', padding='same'))
+    model.add(Conv3D(128, (1, 3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling3D((1, 2, 2)))
+    model.add(Dropout(0.2))
+
+    # Рекуррентный блок с двухнаправленными GRU
+    model.add(TimeDistributed(Flatten()))
+    model.add(Bidirectional(GRU(128, return_sequences=True)))
+    model.add(Bidirectional(GRU(256, return_sequences=True)))
+    model.add(Bidirectional(GRU(256, return_sequences=True)))
+    model.add(Bidirectional(GRU(256)))
+
+    # Полносвязные слои
+    model.add(Dense(256, activation='relu'))
+    model.add(Dense(256, activation='relu'))
+    model.add(Dropout(0.2))
+    model.add(Dense(out, activation='softmax'))
+
+    model.compile(optimizer=Adam(0.0001), loss=CategoricalCrossentropy(),
+                  metrics=['accuracy', precision, recall])
+    model.summary()
+
+    return model
+
+model_7(2,5)
 print('import models')

@@ -133,8 +133,8 @@ def check_model():
             sf.create_plots(main_spec, path, s[2:], prediction)
 
 
-def preparation_data(batch_size):
-    paths = glob(f'{main_path}/marking_spectrogram/*')
+def preparation_data(batch_size, count_last=0):
+    paths = glob(f'{main_path}/marking_spectrogram/*')[-count_last:]
     features = []
     targets = []
     for i, path in enumerate(paths[:]):
@@ -251,12 +251,59 @@ def relearn_model(true_features, true_targets):
             model.fit(
                 features, targets,
                 batch_size=16,
-                steps_per_epoch=f.shape[0] // 16,
-                epochs=1
+                steps_per_epoch=features.shape[0] // 16,
+                epochs=2
             )
         if break_:
             break_ = False
             continue
         model.save(f'{main_path}/models/model_6_2_retrain.keras')
+
+
+def remarking(path, true_features=0, true_targets=0):
+    # - принимает путь
+    # - даёт мне разметить первые две выборки-
+    # - модель доразмечает все остальные сама
+    # - выводит случайные самостоятельно размеченные выборки
+    audio, sr = lb.load(path)
+    length = len(audio) / sr
+    count_slices = int(length * settings.Settings.count_slices_in_sec)
+    main_spec = sf.spec_from_audio(audio, count_slices, 256)
+
+    segments = sf.split_spectrogram(256, main_spec)
+    portions = sf.return_segments_for_plots(segments)
+    for p in portions[:3]:
+        sf.create_plots(main_spec, path, p, [i for i in range(16)])
+        sleep(3)
+        answers = sf.input_marking_answers(len(p))
+        p = p.reshape(16, -1)
+        df = pd.DataFrame(p)
+        df['label'] = answers
+        count = len(glob(f'{main_path}/marking_spectrogram/*'))
+        df.to_csv(f'{main_path}/marking_spectrogram/batch_{count}.csv', index=False)
+
+    new_features, new_targets = preparation_data(3, 3)
+    print(new_features.shape, new_targets.shape)
+    features = np.append(true_features, new_features).reshape(-1, 3, 256, 256, 1)
+    targets = np.append(true_targets, new_targets).reshape(-1, 2)
+
+    model = load_model(f'{main_path}/models/model_6_2_retrain.keras')
+    model.fit(
+        features, targets,
+        batch_size=16,
+        steps_per_epoch=features.shape[0] // 16,
+        epochs=2
+    )
+
+    for _ in range(2):
+        portion = portions[np.random.randint(0, len(portions))]
+        check_batch, _ = sf.get_batch_data(portion, [1 for _ in range(len(portion))], 3)
+        print(check_batch.shape)
+        prediction = model.predict(check_batch)
+        prediction = np.round(prediction, 2)
+
+        sf.create_plots(main_spec, path, check_batch[:, -1], prediction)
+
+
 
 # научиться пользоваться генераторами
