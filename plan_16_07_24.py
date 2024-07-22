@@ -186,7 +186,7 @@ def learn_model_2():
     model.save(f'{main_path}/models/model_6_2.keras')
 
 
-def relearn_model():
+def relearn_model(true_features, true_targets):
     print('relearn_model')
 
     # - если прогнозы всех записей схожи между собой, то выбирается другая запись
@@ -213,7 +213,7 @@ def relearn_model():
         return False
 
     break_ = False
-    true_features, true_targets = preparation_data(3)
+    # true_features, true_targets = preparation_data(3)
     model = load_model(f'{main_path}/models/model_6_2.keras')
     paths = sf.get_bird_paths(0, 'train')
     np.random.shuffle(paths)
