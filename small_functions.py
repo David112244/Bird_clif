@@ -1,4 +1,3 @@
-
 import os
 
 import numpy as np
@@ -12,10 +11,9 @@ from sklearn.model_selection import train_test_split
 
 import settings
 
-
-
 bird_species = settings.get_bird_species()
 main_path = settings.Settings.main_path
+
 
 def spec_from_audio(audio, hop=128, mel=128):
     sr = 22050

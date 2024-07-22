@@ -195,8 +195,8 @@ def relearn_model(true_features, true_targets):
     # - порог правильности 0.8, если модель классифициирует все записи в правильные
     # или в неправильные, то запись также скипается
     # - обучение будет проходить по всем данным + по двум копированным новым. Одна эпоха
-    def th(x, y):
-        if y >= 0.9:
+    def th(x, y, threshold=0.9):
+        if y >= threshold:
             return [0, 1]
         return [1, 0]
 
@@ -228,30 +228,37 @@ def relearn_model(true_features, true_targets):
         segments = sf.split_spectrogram(256, main_spec)
         sfp = sf.return_segments_for_plots(segments)
         for s in sfp:
+            # просит подтверждения, если всё ок, идёт обучение, если нет снижает порого
+            # оценки и выводит результат заново
             f, t = sf.get_batch_data(s, [1 for _ in range(len(s))], 3)
 
             prediction = model.predict(f)
-            round_prediction = np.array([th(pre[0], pre[1]) for pre in prediction])
-            # print(round_prediction)
-            similarity = similarity_check(prediction)
-            round_similarity = similarity_check(round_prediction)
-            if similarity or round_similarity:
-                break_ = True
-                break
-            prediction_str = [f'{rp[0]}_{rp[1]}' for rp in round_prediction]
-            sf.create_plots(main_spec, path, s[2:], prediction_str)
-            # if input('True? >>>') != 't':
-            #     continue
-
+            while True:
+                threshold = 0.9
+                round_prediction = np.array([th(pre[0], pre[1], threshold) for pre in prediction])
+                # print(round_prediction)
+                similarity = similarity_check(prediction)
+                round_similarity = similarity_check(round_prediction)
+                if similarity or round_similarity:
+                    break_ = True
+                    break
+                prediction_str = [f'{rp[0]}_{rp[1]}' for rp in round_prediction]
+                sf.create_plots(main_spec, path, s[2:], prediction_str)
+                input_ = input('True? >>>')
+                sleep(3)
+                if input_ == '':
+                    break
+                else:
+                    threshold -= 0.1
             features = np.append(true_features, f).reshape(-1, 3, 256, 256, 1)
             targets = np.append(true_targets, round_prediction).reshape(-1, 2)
 
-            # print(features.shape, targets.shape)
+            print(features.shape, targets.shape)
 
             model.fit(
                 features, targets,
                 batch_size=16,
-                steps_per_epoch=f.shape[0] // 16,
+                steps_per_epoch=features.shape[0] // 16,
                 epochs=1
             )
         if break_:
@@ -259,7 +266,6 @@ def relearn_model(true_features, true_targets):
             continue
         model.save(f'{main_path}/models/model_6_2_retrain.keras')
 
-
-# learn_model_2()
+relearn_model()
 
 # научиться пользоваться генераторами
