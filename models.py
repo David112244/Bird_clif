@@ -370,5 +370,39 @@ def model_7(out, depth, height=256, width=256, channels=1):
 
     return model
 
-# model_7(2,5)
-print('import models')
+
+def model_8(inp=1):  # обычная, маркировочная
+    model = Sequential()
+    model.add(Conv2D(64, input_shape=[256, 256, inp], kernel_size=[3, 3], activation='relu'))
+    model.add(Conv2D(64, kernel_size=[3, 3], activation='relu'))
+    model.add(MaxPooling2D([3, 3]))
+    model.add(Dropout(0.2))
+
+    model.add(Conv2D(128, kernel_size=[3, 3], activation='relu'))
+    model.add(Conv2D(128, kernel_size=[3, 3], activation='relu'))
+    model.add(MaxPooling2D())
+    model.add(Dropout(0.2))
+
+    model.add(Conv2D(256, kernel_size=[3, 3], activation='relu'))
+    model.add(Conv2D(256, kernel_size=[3, 3], activation='relu'))
+    model.add(MaxPooling2D())
+    model.add(Dropout(0.2))
+
+    model.add(Flatten())
+    model.add(Dense(512, activation='relu'))
+    model.add(Dense(512, activation='relu'))
+    model.add(Dropout(0.1))
+
+    model.add(Dense(256, activation='relu'))
+    model.add(Dropout(0.1))
+
+    model.add(Dense(5, activation='softmax'))
+
+    model.compile(optimizer=Adam(0.0001), loss=CategoricalCrossentropy(),
+                  metrics=['accuracy', precision, recall])
+    model.summary()
+
+    return model
+
+
+model_8()

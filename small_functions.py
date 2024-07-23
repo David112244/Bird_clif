@@ -6,6 +6,7 @@ from glob import glob
 import librosa as lb
 from collections import Counter
 from matplotlib import pyplot as plt
+import cv2
 
 from sklearn.model_selection import train_test_split
 
@@ -345,7 +346,7 @@ def input_marking_answers(count):
     else:
         inp = input(f'{count} ответов>>>')
         if inp == 'stop':
-            return inp
+            return np.array(['s'])
         try:
             inp = [int(i) for i in inp]
         except ValueError:
@@ -509,3 +510,10 @@ def get_batch_data(features, targets, batch_size):
     r_features = np.array(r_features)
     r_targets = np.array(r_targets)
     return [r_features, r_targets]
+
+
+# добавляет пустые спектрограммы
+def add_empty_spectrogram(folder_path,name):
+    file_name = f'{folder_path}/{name}'
+    empty_image = np.zeros((256, 256))
+    cv2.imwrite(file_name, empty_image)
