@@ -371,7 +371,7 @@ def model_7(out, depth, height=256, width=256, channels=1):
     return model
 
 
-def model_8(inp=1):  # обычная, маркировочная
+def model_8(inp=1,out=5):  # обычная, маркировочная
     model = Sequential()
     model.add(Conv2D(64, input_shape=[256, 256, inp], kernel_size=[3, 3], activation='relu'))
     model.add(Conv2D(64, kernel_size=[3, 3], activation='relu'))
@@ -396,7 +396,7 @@ def model_8(inp=1):  # обычная, маркировочная
     model.add(Dense(256, activation='relu'))
     model.add(Dropout(0.1))
 
-    model.add(Dense(5, activation='softmax'))
+    model.add(Dense(out, activation='softmax'))
 
     model.compile(optimizer=Adam(0.0001), loss=CategoricalCrossentropy(),
                   metrics=['accuracy', precision, recall])

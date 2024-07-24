@@ -16,17 +16,23 @@ import settings
 
 bird_species = settings.get_bird_species()[:]
 main_path = settings.Settings.main_path
+print(len(bird_species))
 
 
-def create_spectrogram_each_species():
-    for i, species in enumerate(bird_species):
-        # i += 2
+def load_data():
+    features = []
+    targets = []
+    bs = bird_species
+    np.random.shuffle(bs)
+    for species in bs:
+        i = sf.get_index(species)
         print(species)
         folder_path = f'{main_path}/spectrogram/{species}'
         os.makedirs(folder_path, exist_ok=True)
-        species_paths = sf.get_bird_paths(i, 'train', test_size=0.7)
+        species_paths = sf.get_bird_paths(i, 'train', test_size=0.5)
+        np.random.shuffle(species_paths)
         print(len(species_paths))
-        for i, path in enumerate(species_paths):
+        for i, path in enumerate(species_paths[:10]):
             print(i, end=' ')
             if settings.Settings.on_pycharm:
                 file_name = path.split('\\')[-1].split('.')[0]
@@ -41,20 +47,14 @@ def create_spectrogram_each_species():
             count_slices = int(length * settings.Settings.count_slices_in_sec)
             main_spec = sf.spec_from_audio(audio, count_slices, 256)
             segments = sf.split_spectrogram(settings.Settings.count_slices_in_step, main_spec)
-            file_path = f'{folder_path}/{file_name}'
-            index = 0
-            # for _ in range(3):
-            #     sf.add_empty_spectrogram(file_path, f'segment_{index}.jpg')
-            #     index += 1
-            for seg in segments:
-                cv2.imwrite(f'{file_path}/segment_{index}.jpg', seg * 255)
-                index += 1
-            # for _ in range(3):
-            #     sf.add_empty_spectrogram(file_path, f'segment_{index}.jpg')
-            #     index += 1
+            np.random.shuffle(segments)
+            for seg in segments[:10]:
+                features.append(seg)
+                targets.append(i)
+    return [np.array(features), np.array(targets)]
 
 
-def load_data():
+def load_data_outdated():
     data = []
     targets = []
     index = 0
@@ -77,11 +77,11 @@ def load_data():
 
 
 def learn_model():
-    model = models.model_8()
+    model = models.model_8(out=182)
     for _ in range(100):
         features, targets = load_data()
         features = features.reshape(features.shape[0], 256, 256, 1)
-        targets = to_categorical(targets)
+        targets = to_categorical(targets,num_classes=182)
 
         early_stopping = EarlyStopping(
             min_delta=0.01,
@@ -106,7 +106,7 @@ def check_accuracy_model():
     for _ in range(10):
         species = bird_species[np.random.randint(0, len(bird_species))]
         species_index = sf.get_index(species)
-        species_paths = sf.get_bird_paths(species_index, 'test', test_size=0.7)
+        species_paths = sf.get_bird_paths(species_index, 'test', test_size=0.5)
         batch_species_paths = species_paths[np.random.randint(0, len(species_paths), 16)]
         batch = []
         for path in batch_species_paths:
@@ -122,9 +122,8 @@ def check_accuracy_model():
         features = batch.reshape(16, 256, 256, 1)
         prediction = model.predict(features)
         # str_predictions = [','.join([str(np.round(p, 2)) for p in pr]) for pr in prediction]
-        difference_prediction = [str(1-p[species_index]) for p in prediction]
+        difference_prediction = [str(1 - p[species_index]) for p in prediction]
 
         sf.create_plots(batch[0], f'Must be {species_index}', batch, difference_prediction)
-
 
 # create_spectrogram_each_species()
