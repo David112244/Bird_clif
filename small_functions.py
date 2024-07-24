@@ -359,20 +359,20 @@ def input_marking_answers(count):
 
 
 # делит список из путей на тренировочные и тестовые пути
-def train_test_paths(paths):
-    train_paths, test_paths = train_test_split(paths, random_state=1, test_size=0.05)
+def train_test_paths(paths, test_size):
+    train_paths, test_paths = train_test_split(paths, random_state=1, test_size=test_size)
     return [train_paths, test_paths]
 
 
 # выводит тренировочные или тестовые пути определённого вида птицы
-def get_bird_paths(bird_index, train_test):
+def get_bird_paths(bird_index, train_test, test_size=0.25):
     species = bird_species[bird_index]
     paths = glob(f'{main_path}/train_audio/{species}/*')
-    paths = train_test_paths(paths)
+    paths = train_test_paths(paths, test_size)
     if train_test == 'train':
-        return paths[0]
+        return np.array(paths[0])
     elif train_test == 'test':
-        return paths[1]
+        return np.array(paths[1])
 
 
 # возвращает тренировачные или тестовые пути всех видов птиц
@@ -513,7 +513,7 @@ def get_batch_data(features, targets, batch_size):
 
 
 # добавляет пустые спектрограммы
-def add_empty_spectrogram(folder_path,name):
+def add_empty_spectrogram(folder_path, name):
     file_name = f'{folder_path}/{name}'
     empty_image = np.zeros((256, 256))
     cv2.imwrite(file_name, empty_image)
