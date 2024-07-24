@@ -169,7 +169,7 @@ def learn_model_2():
     early_stopping = EarlyStopping(
         min_delta=0.01,
         verbose=1,
-        patience=10,
+        patience=30,
         start_from_epoch=25,
         restore_best_weights=True
     )

@@ -405,4 +405,4 @@ def model_8(inp=1):  # обычная, маркировочная
     return model
 
 
-model_8()
+# model_8()
