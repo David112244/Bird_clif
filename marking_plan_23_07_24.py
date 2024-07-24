@@ -14,7 +14,6 @@ import models
 import small_functions as sf
 import settings
 
-
 bird_species = settings.get_bird_species()[:]
 main_path = settings.Settings.main_path
 
@@ -25,7 +24,7 @@ def create_spectrogram_each_species():
         print(species)
         folder_path = f'{main_path}/spectrogram/{species}'
         os.makedirs(folder_path, exist_ok=True)
-        species_paths = sf.get_bird_paths(i, 'train', test_size=0.5)
+        species_paths = sf.get_bird_paths(i, 'train', test_size=0.7)
         print(len(species_paths))
         for i, path in enumerate(species_paths):
             print(i, end=' ')
@@ -122,9 +121,10 @@ def check_accuracy_model():
         batch = np.array(batch)
         features = batch.reshape(16, 256, 256, 1)
         prediction = model.predict(features)
-        str_predictions = [','.join([str(np.round(p, 2)) for p in pr]) for pr in prediction]
+        # str_predictions = [','.join([str(np.round(p, 2)) for p in pr]) for pr in prediction]
+        difference_prediction = [str(1-p[species_index]) for p in prediction]
 
-        sf.create_plots(batch[0], f'Must be {species_index}', batch, str_predictions)
+        sf.create_plots(batch[0], f'Must be {species_index}', batch, difference_prediction)
 
 
-create_spectrogram_each_species()
+# create_spectrogram_each_species()
