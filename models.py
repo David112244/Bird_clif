@@ -358,7 +358,7 @@ def model_7(out, depth, height=256, width=256, channels=1):
 
     # Рекуррентный блок с двухнаправленными GRU
     model.add(TimeDistributed(Flatten()))
-    model.add(Bidirectional(GRU(128, return_sequences=True)))
+    model.add(Bidirectional(GRU(256, return_sequences=True)))
     model.add(Bidirectional(GRU(256, return_sequences=True)))
     model.add(Bidirectional(GRU(256, return_sequences=True)))
     model.add(Bidirectional(GRU(256)))

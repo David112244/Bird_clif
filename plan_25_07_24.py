@@ -150,6 +150,6 @@ def check_accuracy_first_learn_model(bird_id):
         input('Go?')
 
 
-f, t = load_data(0)
-print(f.shape, t.shape)
-check_accuracy_load_data(f, t)
+# f, t = load_data(0)
+# print(f.shape, t.shape)
+# check_accuracy_load_data(f, t)
