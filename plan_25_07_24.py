@@ -104,7 +104,8 @@ def check_accuracy_load_data(f, t):
 
 def learn_model(bird_id, features, targets):
     species = bird_species[bird_id]
-    model = models.model_9_binary_marking()
+    model = models.model_7(2, 3)
+    tar = to_categorical(targets)
     early_stopping = EarlyStopping(
         min_delta=0.01,
         verbose=1,
@@ -115,14 +116,14 @@ def learn_model(bird_id, features, targets):
 
     model.fit(
         features,
-        targets,
+        tar,
         validation_split=0.1,
         epochs=500,
         batch_size=8,
         steps_per_epoch=features.shape[0] // 8,
         callbacks=[early_stopping]
     )
-    model.save(f'{main_path}/models/model_9_marking_{species}.keras')
+    model.save(f'{main_path}/models/model_7_marking_{species}.keras')
 
 
 def check_accuracy_first_learn_model(bird_id):
@@ -150,5 +151,5 @@ def check_accuracy_first_learn_model(bird_id):
 
 
 f, t = load_data(0)
-print(f.shape,t.shape)
+print(f.shape, t.shape)
 check_accuracy_load_data(f, t)

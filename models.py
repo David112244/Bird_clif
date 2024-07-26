@@ -351,6 +351,11 @@ def model_7(out, depth, height=256, width=256, channels=1):
     model.add(MaxPooling3D((1, 2, 2)))
     model.add(Dropout(0.2))
 
+    model.add(Conv3D(256, (1, 3, 3), activation='relu', padding='same'))
+    model.add(Conv3D(256, (1, 3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling3D((1, 2, 2)))
+    model.add(Dropout(0.2))
+
     # Рекуррентный блок с двухнаправленными GRU
     model.add(TimeDistributed(Flatten()))
     model.add(Bidirectional(GRU(128, return_sequences=True)))
@@ -560,3 +565,4 @@ def model_9_binary_marking(depth=3, height=256, width=256, channels=1):
 
 
 # model_9_binary_marking()
+model_7(2,3)
