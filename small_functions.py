@@ -7,6 +7,7 @@ import librosa as lb
 from collections import Counter
 from matplotlib import pyplot as plt
 import cv2
+from math import ceil
 
 from sklearn.model_selection import train_test_split
 
@@ -513,7 +514,28 @@ def get_batch_data(features, targets, batch_size):
 
 
 # добавляет пустые спектрограммы
-def add_empty_spectrogram(folder_path, name):
-    file_name = f'{folder_path}/{name}'
+def add_empty_spectrogram(path):
     empty_image = np.zeros((256, 256))
-    cv2.imwrite(file_name, empty_image)
+    cv2.imwrite(path, empty_image)
+
+
+# принимает путь, возвращает имя файла
+def get_file_name(path):
+    if settings.Settings.on_pycharm:
+        audio_folder_name = path.split('\\')[-1].split('.')[0]
+    else:
+        audio_folder_name = path.split('/')[-1].split('.')[0]
+    return audio_folder_name
+
+
+# принимает последовательность входных данных (спектрограм) и ответов
+# возвращает данные сгруппированные по три записи, с ответом взятым с
+# записи по середине
+def create_batch(f, t, batch_size=3):
+    before = ceil((batch_size - 1) / 2)
+    after = batch_size - before - 1
+    b_f = []
+    for i in range(len(f) - 2):
+        batch = [f[i], f[i + 1], f[i + 2]]
+        b_f.append(batch)
+    return [np.array(b_f).reshape(-1, batch_size, 256, 256), np.array(t[1:-1])]

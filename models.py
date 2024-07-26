@@ -371,7 +371,7 @@ def model_7(out, depth, height=256, width=256, channels=1):
     return model
 
 
-def model_8(inp=1,out=5):  # обычная, маркировочная
+def model_8(inp=1, out=5):  # обычная, маркировочная
     model = Sequential()
     model.add(Conv2D(64, input_shape=[256, 256, inp], kernel_size=[3, 3], activation='relu'))
     model.add(Conv2D(64, kernel_size=[3, 3], activation='relu'))
@@ -405,4 +405,158 @@ def model_8(inp=1,out=5):  # обычная, маркировочная
     return model
 
 
-# model_8()
+def model_VGG16():
+    model = Sequential()
+
+    # Слой 1
+    model.add(Conv2D(64, (3, 3), activation='relu', padding='same', input_shape=(224, 224, 3)))
+    model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    # Слой 2
+    model.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    # Слой 3
+    model.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    # Слой 4
+    model.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    # Слой 5
+    model.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    # Полносвязные слои
+    model.add(Flatten())
+    model.add(Dense(4096, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(4096, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(1000, activation='softmax'))  # 1000 классов для ImageNet
+
+    # Компиляция модели
+    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+    # Вывод архитектуры модели
+    model.summary()
+
+
+def model_VGG19():
+    model = Sequential()
+
+    # Block 1
+    model.add(Conv2D(64, (3, 3), activation='relu', padding='same', input_shape=(224, 224, 3)))
+    model.add(Conv2D(64, (3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # Block 2
+    model.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(128, (3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # Block 3
+    model.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(256, (3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # Block 4
+    model.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # Block 5
+    model.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
+    model.add(Conv2D(512, (3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+    # Классификация
+    model.add(Flatten())
+    model.add(Dense(4096, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(4096, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(1000, activation='softmax'))
+
+    # Компиляция модели
+    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    model.summary()
+
+
+def model_9_binary_marking(depth=3, height=256, width=256, channels=1):
+    model = Sequential()
+
+    # Блок свёрточных слоёв 1
+    model.add(
+        Conv3D(32, (1, 3, 3), activation='relu', padding='same', input_shape=(depth, height, width, channels)))
+    model.add(Conv3D(32, (1, 3, 3), activation='relu', padding='same'))
+    model.add(Conv3D(32, (1, 3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling3D((1, 2, 2)))
+    model.add(Dropout(0.2))
+
+    # Блок свёрточных слоёв 2
+    model.add(Conv3D(64, (1, 3, 3), activation='relu', padding='same'))
+    model.add(Conv3D(64, (1, 3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling3D((1, 2, 2)))
+    model.add(Dropout(0.2))
+
+    # Блок свёрточных слоёв 3
+    model.add(Conv3D(128, (1, 3, 3), activation='relu', padding='same'))
+    model.add(Conv3D(128, (1, 3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling3D((1, 2, 2)))
+    model.add(Dropout(0.2))
+
+    model.add(Conv3D(128, (1, 3, 3), activation='relu', padding='same'))
+    model.add(Conv3D(128, (1, 3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling3D((1, 2, 2)))
+    model.add(Dropout(0.2))
+
+    model.add(Conv3D(128, (1, 3, 3), activation='relu', padding='same'))
+    model.add(Conv3D(128, (1, 3, 3), activation='relu', padding='same'))
+    model.add(MaxPooling3D((1, 2, 2)))
+    model.add(Dropout(0.2))
+
+    model.add(Conv3D(256, (1, 2, 2), activation='relu', padding='same'))
+    model.add(Conv3D(256, (1, 2, 2), activation='relu', padding='same'))
+    model.add(MaxPooling3D((1, 2, 2)))
+    model.add(Dropout(0.2))
+
+    model.add(Conv3D(512, (1, 2, 2), activation='relu', padding='same'))
+    model.add(Conv3D(512, (1, 2, 2), activation='relu', padding='same'))
+    model.add(MaxPooling3D((1, 2, 2)))
+    model.add(Dropout(0.2))
+
+    # Рекуррентный блок с двухнаправленными GRU
+    model.add(TimeDistributed(Flatten()))
+    model.add(Bidirectional(GRU(128, return_sequences=True)))
+    model.add(Bidirectional(GRU(256)))
+
+    # Полносвязные слои
+    model.add(Dense(256, activation='relu'))
+    model.add(Dense(256, activation='relu'))
+    model.add(Dropout(0.2))
+    model.add(Dense(1, activation='sigmoid'))
+
+    model.compile(optimizer=Adam(0.0001), loss='binary_crossentropy',
+                  metrics=['accuracy', precision, recall])
+    model.summary()
+
+    return model
+
+
+# model_9_binary_marking()

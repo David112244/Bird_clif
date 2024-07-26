@@ -1,3 +1,6 @@
+# какие мне нужны функции:
+# 1. разметки
+# 2. проверки проверка точности недоразмеченных данных
 import os
 from typing import List
 
@@ -43,8 +46,6 @@ def marking(bird_id):
         # folder_name = 'XC175797'
         folder_path = f'{main_path}/marking_spectrogram/{species}/{folder_name}'
 
-
-
         audio, sr = lb.load(path)
         length = len(audio) / sr
         count_slices = int(length * settings.Settings.count_slices_in_sec)
@@ -75,11 +76,11 @@ def marking(bird_id):
             answers = sf.input_marking_answers(len(p))
             if np.array_equal(answers, np.array(['s'])):
                 for _ in range(3):
-                    sf.add_empty_spectrogram(species, folder_name)
+                    sf.add_empty_spectrogram(species, f'{main_path}/marking_spectrogram/{species}/{folder_name}/')
                 return
             count_files = len(glob(f'{folder_path}/*'))
             for pic, an, i in zip(p, answers, [j for j in range(count_files, count_files + 8)]):
-                file_name = f'{i}_batch_{an}_manually.jpg'
+                file_name = f'{i}_batch_{an}_manually.png'
                 cv2.imwrite(f'{folder_path}/{file_name}', pic)
 
 
