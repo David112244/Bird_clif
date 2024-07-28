@@ -570,7 +570,7 @@ def sort_segments(path_list,delimiter='/'):
     for path in path_list:
         file_name = path.split(delimiter)[-1]
         index = file_name.split('_')[0]
-        path_dict[index] = file_name
+        path_dict[index] = path
     result = []
     for i in range(len(path_dict)):
         try:
