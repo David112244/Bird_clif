@@ -575,3 +575,4 @@ def sort_segments(path_list):
     for i in range(len(path_dict)):
         result.append(path_dict[i])
     return result
+print('new')
