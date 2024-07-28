@@ -577,6 +577,4 @@ def sort_segments(path_list,delimiter='/'):
             result.append(path_dict[str(i)])
         except KeyError:
             continue
-    print(result)
     return result
-print('new')
