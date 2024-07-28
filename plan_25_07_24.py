@@ -12,16 +12,16 @@ from time import sleep
 from collections import Counter
 import cv2
 
-from keras.utils import to_categorical
-from keras.models import load_model
-from keras.callbacks import EarlyStopping
+# from keras.utils import to_categorical
+# from keras.models import load_model
+# from keras.callbacks import EarlyStopping
 
-import models
+# import models
 import small_functions as sf
 import medium_functions as mf
 import settings
 
-bird_species = settings.get_bird_species()
+bird_species = sf.get_bird_species()
 main_path = settings.Settings.main_path
 
 
@@ -131,25 +131,29 @@ def check_accuracy_first_learn_model(bird_id):
     check_paths = glob(f'{main_path}/marking_spectrogram/{species}/*')
     folder_names = np.array([check_path.split(f'\\')[-1] for check_path in check_paths])
     np.random.shuffle(folder_names)
-    features = []
     for name in folder_names:
-        paths_to_segments = glob(f'{main_path}/marking_spectrogram/{species}/{name}/*')
-        for path in paths_to_segments:
-            features.append(cv2.imread(path, cv2.IMREAD_GRAYSCALE))
-    features, _ = sf.create_batch(features, [1 for i in range(len(features))])
-    features = features.reshape(features.shape[0], 3, 256, 256, 1)
+        path=f'{main_path}/train_audio/{species}/{name}.ogg'
+        audio, sr = lb.load(path)
+        length = len(audio) / sr
+        if length<2.5:
+            continue
+        count_slices = int(length * settings.Settings.count_slices_in_sec)
+        main_spec = sf.spec_from_audio(audio, count_slices, 256)
 
-    model = load_model(f'{main_path}/models/model_9_marking_{species}.keras')
-    prediction = np.round(model.predict(features), 3)
-    features_to_show = np.squeeze([i[1] for i in features])
-    features_to_show = sf.return_segments_for_plots(features_to_show)
-    prediction_to_show = sf.return_segments_for_plots(prediction)
-    for f, p in zip(features_to_show, prediction_to_show):
-        sf.create_plots(f[0], species, f, p)
-        sleep(3)
+        segments = sf.split_spectrogram(256, main_spec)
+        # sfp = sf.return_segments_for_plots(segments)
+
+        features, _ = sf.create_batch(segments, [1 for i in range(len(segments))])
+        features = features.reshape(features.shape[0], 3, 256, 256, 1)
+
+        model = load_model(f'{main_path}/models/model_9_marking_{species}.keras')
+        prediction = np.round(model.predict(features), 3)
+        features_to_show = np.squeeze([i[1] for i in features])
+        features_to_show = sf.return_segments_for_plots(features_to_show)
+        prediction_to_show = sf.return_segments_for_plots(prediction)
+        for f, p in zip(features_to_show, prediction_to_show):
+            sf.create_plots(f[0], species, f, p)
+            sleep(3)
         input('Go?')
 
 
-# f, t = load_data(0)
-# print(f.shape, t.shape)
-# check_accuracy_load_data(f, t)
