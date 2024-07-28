@@ -565,17 +565,18 @@ def get_bird_species():
 
 
 # сортирует сегменты по порядку
-def sort_segments(path_list):
+def sort_segments(path_list,delimiter='/'):
     path_dict = {}
     for path in path_list:
-        file_name = path.split('/')[-1]
+        file_name = path.split(delimiter)[-1]
         index = file_name.split('_')[0]
         path_dict[index] = file_name
     result = []
     for i in range(len(path_dict)):
         try:
             result.append(path_dict[str(i)])
-        except KeyError :
+        except KeyError:
             continue
+    print(result)
     return result
 print('new')
