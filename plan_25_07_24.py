@@ -12,11 +12,11 @@ from time import sleep
 from collections import Counter
 import cv2
 
-# from keras.utils import to_categorical
-# from keras.models import load_model
-# from keras.callbacks import EarlyStopping
+from keras.utils import to_categorical
+from keras.models import load_model
+from keras.callbacks import EarlyStopping
 
-# import models
+import models
 import small_functions as sf
 import medium_functions as mf
 import settings

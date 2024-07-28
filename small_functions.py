@@ -573,6 +573,6 @@ def sort_segments(path_list):
         path_dict[index] = file_name
     result = []
     for i in range(len(path_dict)):
-        result.append(path_dict[i])
+        result.append(path_dict[str(i)])
     return result
 print('new')
