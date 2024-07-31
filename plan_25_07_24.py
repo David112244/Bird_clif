@@ -12,11 +12,11 @@ from time import sleep
 from collections import Counter
 import cv2
 
-from keras.utils import to_categorical
-from keras.models import load_model
-from keras.callbacks import EarlyStopping
-
-import models
+# from keras.utils import to_categorical
+# from keras.models import load_model
+# from keras.callbacks import EarlyStopping
+#
+# import models
 import small_functions as sf
 import medium_functions as mf
 import settings
@@ -132,10 +132,10 @@ def check_accuracy_first_learn_model(bird_id):
     folder_names = np.array([check_path.split(f'\\')[-1] for check_path in check_paths])
     np.random.shuffle(folder_names)
     for name in folder_names:
-        path=f'{main_path}/train_audio/{species}/{name}.ogg'
+        path = f'{main_path}/train_audio/{species}/{name}.ogg'
         audio, sr = lb.load(path)
         length = len(audio) / sr
-        if length<2.5:
+        if length < 2.5:
             continue
         count_slices = int(length * settings.Settings.count_slices_in_sec)
         main_spec = sf.spec_from_audio(audio, count_slices, 256)
@@ -157,3 +157,95 @@ def check_accuracy_first_learn_model(bird_id):
         input('Go?')
 
 
+def check_marking_data():
+    folder_names = glob(f'{main_path}/output_data/*')
+    np.random.shuffle(folder_names)
+    for folder in folder_names:
+        paths = glob(f'{folder}/*')
+        specs = []
+        labels = []
+        for path in paths:
+            file_name = path.split('\\')[-1]
+            labels.append(file_name.split('_')[2])
+            specs.append(cv2.imread(path, cv2.IMREAD_GRAYSCALE))
+        specs_batch = sf.return_segments_for_plots(specs)
+        labels_batch = sf.return_segments_for_plots(labels)
+        paths_batch = sf.return_segments_for_plots(paths)
+        for s, l, p, i in zip(specs_batch, labels_batch, paths_batch, range(len(specs_batch))):
+            if i >= 3: break
+            i += 1
+            sf.create_plots(s[0], folder, s, l)
+            inp = input('Norm?')
+            nums = [p_.split('\\')[-1].split('_')[0] for p_ in p]
+            if inp == 'n':
+                answers = sf.input_marking_answers(len(s))
+                [os.remove(pt) for pt in p]
+                for new_l, seg, num in zip(answers, s, nums):
+                    cv2.imwrite(f'{folder}/{num}_segment_{new_l}_remarkable.png', seg)
+            elif inp == 's':
+                break
+            else:
+                [os.remove(pt) for pt in p]
+                for seg, leb, num in zip(s, l, nums):
+                    cv2.imwrite(f'{folder}/{num}_segment_{leb}_modelCheck.png', seg)
+
+
+def add_noise(spec, intensity=10000):
+    s = spec.copy()
+    row = np.random.randint(0, 256, intensity)
+    col = np.random.randint(0, 256, intensity)
+    for r, c in zip(row, col):
+        s[r][c] = np.random.randint(0, 255)
+    return s
+
+
+def brightness_change(spec, intensity):
+    return spec - intensity
+
+
+def contrast(spec):
+    kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
+    return cv2.filter2D(spec, -1, kernel=kernel)
+
+
+def create_learn_data(bird_id):
+    # path = r'E:\datas\birdclif\marking_spectrogram\asbfly\XC305518/16_segment_1_manual.png'
+    # spec = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+
+    # fig, axes = plt.subplots(1, 5)
+    # lb.display.specshow(spec, ax=axes[0])
+    # lb.display.specshow(add_noise(spec, 30000), ax=axes[1])
+    # lb.display.specshow(brightness_change(spec, 200), ax=axes[2])
+    # lb.display.specshow(brightness_change(spec, 50), ax=axes[3])
+    # lb.display.specshow(contrast(spec), ax=axes[4])
+    # plt.show()
+    species = bird_species[bird_id]
+    folder_names = glob(f'{main_path}/marking_spectrogram/{species}/*')
+    for folder_path in folder_names:
+        paths = glob(f'{folder_path}/*')
+        folder_name = folder_path.split('\\')[-1]
+        sort_paths = sf.sort_segments(paths, delimiter='\\')
+        graduation = ['_unchanged', '_plus', '_minus', '_contrast', '_noise']
+        for g in graduation:
+            os.makedirs(f'{main_path}/to_input_data/{species}/{folder_name}{g}', exist_ok=True)
+        # for g in graduation:
+        #     for i in range(3):
+        #         sf.add_empty_spectrogram(f'{main_path}/to_input_data/{species}/{folder_name}{g}/'
+        #                                  f'{i}_segment_0_auto.png')
+        count_file_in_folder = 0
+        for path in sort_paths:
+            label = path.split('_')[-2]
+            unchanged = cv2.imread(path)
+            plus = brightness_change(unchanged, 200)
+            minus = brightness_change(unchanged, 50)
+            cont = contrast(unchanged)
+            noise = add_noise(unchanged, 30000)
+
+            variants = [unchanged, plus, minus, cont, noise]
+            for g, v in zip(graduation, variants):
+                cv2.imwrite(f'{main_path}/to_input_data/{species}/{folder_name}{g}/'
+                            f'{count_file_in_folder}_segment_{label}_manualvar.png', v)
+            count_file_in_folder += 1
+
+
+# create_learn_data(0)
